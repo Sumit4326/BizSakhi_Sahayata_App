@@ -16,6 +16,14 @@ const Index = () => {
   const [showOnboarding, setShowOnboarding] = useState(true);
 
   useEffect(() => {
+    // Check if user is logged in
+    const user = localStorage.getItem("bizsakhi-user");
+    if (!user) {
+      // Redirect to login page
+      window.location.href = "/login";
+      return;
+    }
+
     // Check if user has already selected language
     const savedLanguage = localStorage.getItem("bizsakhi-language");
     if (savedLanguage) {
