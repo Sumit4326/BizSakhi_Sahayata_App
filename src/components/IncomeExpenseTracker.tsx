@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VoiceInput } from "@/components/VoiceInput";
+import { useTranslation } from "@/utils/translations";
 
 interface Transaction {
   id: string;
@@ -39,24 +41,8 @@ interface IncomeExpenseTrackerProps {
 }
 
 export function IncomeExpenseTracker({ language }: IncomeExpenseTrackerProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: "1",
-      type: "income",
-      amount: 2500,
-      category: "Sales",
-      description: "Saree sales today",
-      date: new Date()
-    },
-    {
-      id: "2",
-      type: "expense",
-      amount: 800,
-      category: "Materials",
-      description: "Fabric purchase",
-      date: new Date(Date.now() - 86400000)
-    }
-  ]);
+  const { t } = useTranslation(language);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -103,6 +89,18 @@ export function IncomeExpenseTracker({ language }: IncomeExpenseTrackerProps) {
   const getCategoryName = (categoryName: string) => {
     const category = categories.find(c => c.name === categoryName);
     return language === "hi" ? category?.nameHi || categoryName : categoryName;
+  };
+
+  const handleVoiceResult = (text: string, parsedData?: any) => {
+    if (parsedData && parsedData.amount > 0) {
+      setFormData({
+        type: parsedData.type === 'income' ? 'income' : 'expense',
+        amount: parsedData.amount.toString(),
+        category: parsedData.category || '',
+        description: parsedData.description || text
+      });
+      setShowForm(true);
+    }
   };
 
   return (
@@ -154,14 +152,24 @@ export function IncomeExpenseTracker({ language }: IncomeExpenseTrackerProps) {
         </Card>
       </div>
 
+      {/* Voice Input */}
+      <VoiceInput
+        language={language}
+        onResult={handleVoiceResult}
+        placeholder={language === "hi" ? 
+          "जैसे: ₹500 सब्जी की बिक्री से कमाए" : 
+          "e.g: Earned ₹500 from vegetable sales"
+        }
+      />
+
       {/* Add Transaction Button */}
       <Button
         onClick={() => setShowForm(!showForm)}
-        className="w-full h-12"
+        className="w-full h-12 bg-gradient-primary hover:scale-105 transition-all duration-300 shadow-glow"
         size="lg"
       >
         <Plus className="h-5 w-5 mr-2" />
-        {language === "hi" ? "नया लेन-देन जोड़ें" : "Add New Transaction"}
+        {t('income.addTransaction')}
       </Button>
 
       {/* Transaction Form */}

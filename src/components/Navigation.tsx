@@ -13,6 +13,7 @@ interface NavigationProps {
 }
 
 const tabs = [
+  { id: "home", icon: Flower2, nameEn: "Home", nameHi: "होम" },
   { id: "chat", icon: MessageSquare, nameEn: "Sakhi Chat", nameHi: "सखी चैट" },
   { id: "income", icon: TrendingUp, nameEn: "Income/Expense", nameHi: "आय/व्यय" },
   { id: "inventory", icon: Package, nameEn: "Inventory", nameHi: "स्टॉक" },

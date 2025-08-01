@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Home } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { VoiceChatAssistant } from "@/components/VoiceChatAssistant";
@@ -8,12 +10,14 @@ import { InventoryManagement } from "@/components/InventoryManagement";
 import { DailyTips } from "@/components/DailyTips";
 import { LoanHelper } from "@/components/LoanHelper";
 import { Settings } from "@/components/Settings";
-import businessHero from "@/assets/business-hero.jpg";
+import { HomePage } from "@/pages/HomePage";
+import { useTranslation } from "@/utils/translations";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("chat");
+  const [activeTab, setActiveTab] = useState("home");
   const [language, setLanguage] = useState("");
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const { t } = useTranslation(language);
 
   useEffect(() => {
     // Check if user is logged in
@@ -38,8 +42,20 @@ const Index = () => {
     setShowOnboarding(false);
   };
 
+  const handleGetStarted = () => {
+    setActiveTab("chat");
+  };
+
   const renderContent = () => {
     switch (activeTab) {
+      case "home":
+        return (
+          <HomePage 
+            language={language} 
+            onLanguageChange={handleLanguageSelect}
+            onGetStarted={handleGetStarted}
+          />
+        );
       case "chat":
         return <VoiceChatAssistant language={language} />;
       case "income":
@@ -53,25 +69,34 @@ const Index = () => {
       case "settings":
         return <Settings language={language} onLanguageChange={handleLanguageSelect} />;
       default:
-        return <VoiceChatAssistant language={language} />;
+        return (
+          <HomePage 
+            language={language} 
+            onLanguageChange={handleLanguageSelect}
+            onGetStarted={handleGetStarted}
+          />
+        );
+    }
+  };
+
+  const getPageTitle = () => {
+    switch (activeTab) {
+      case "home": return language === "hi" ? "होम" : "Home";
+      case "chat": return t('nav.chat');
+      case "income": return t('nav.income');
+      case "inventory": return t('nav.inventory');
+      case "tips": return t('nav.tips');
+      case "loans": return t('nav.loans');
+      case "settings": return t('nav.settings');
+      default: return language === "hi" ? "होम" : "Home";
     }
   };
 
   // Show language selection onboarding
   if (showOnboarding) {
     return (
-      <div className="min-h-screen bg-gradient-warm">
+      <div className="min-h-screen bg-gradient-radial">
         <div className="relative">
-          {/* Hero Background */}
-          <div className="absolute inset-0 z-0">
-            <img 
-              src={businessHero} 
-              alt="Indian women entrepreneurs" 
-              className="w-full h-full object-cover opacity-20"
-            />
-            <div className="absolute inset-0 bg-gradient-warm/80"></div>
-          </div>
-          
           {/* Onboarding Content */}
           <div className="relative z-10">
             <LanguageSelector
@@ -85,8 +110,13 @@ const Index = () => {
     );
   }
 
+  // Show full homepage for home tab
+  if (activeTab === "home") {
+    return renderContent();
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-warm">
+    <div className="min-h-screen bg-gradient-subtle">
       <div className="flex">
         {/* Desktop Navigation Sidebar */}
         <Navigation
@@ -98,19 +128,29 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="flex-1 lg:ml-0">
-          {/* Welcome Header (Desktop Only) */}
-          <div className="hidden lg:block bg-background border-b shadow-card p-6">
+          {/* Page Header */}
+          <div className="bg-gradient-card border-b border-primary/10 shadow-warm p-4 lg:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold">
-                  {language === "hi" ? "नमस्ते! BizSakhi में आपका स्वागत है" : "Hello! Welcome to BizSakhi"}
-                </h1>
-                <p className="text-muted-foreground">
-                  {language === "hi" 
-                    ? "आपकी व्यापारिक सफलता के लिए यहाँ मैं आपकी मदद करूंगी।"
-                    : "I'm here to help you succeed in your business journey."
-                  }
-                </p>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setActiveTab("home")}
+                  className="hover:bg-primary/10 hover:scale-110 transition-all duration-300"
+                >
+                  <Home className="h-5 w-5" />
+                </Button>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                    {getPageTitle()}
+                  </h1>
+                  <p className="text-muted-foreground">
+                    {language === "hi" 
+                      ? "आपकी व्यापारिक सफलता के लिए यहाँ मैं आपकी मदद करूंगी।"
+                      : "I'm here to help you succeed in your business journey."
+                    }
+                  </p>
+                </div>
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">
@@ -127,8 +167,8 @@ const Index = () => {
 
           {/* Content Area */}
           <div className="p-4 lg:p-6">
-            <Card className="shadow-warm min-h-[calc(100vh-200px)] lg:min-h-[calc(100vh-150px)]">
-              <CardContent className="p-0 h-full">
+            <Card className="shadow-warm min-h-[calc(100vh-200px)] lg:min-h-[calc(100vh-150px)] border-none bg-background/80 backdrop-blur-sm">
+              <CardContent className="p-6 h-full">
                 {renderContent()}
               </CardContent>
             </Card>

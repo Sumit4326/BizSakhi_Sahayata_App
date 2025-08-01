@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { VoiceInput } from "@/components/VoiceInput";
+import { useTranslation } from "@/utils/translations";
 
 interface Product {
   id: string;
@@ -21,35 +23,8 @@ interface InventoryManagementProps {
 }
 
 export function InventoryManagement({ language }: InventoryManagementProps) {
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: "1",
-      name: "Cotton Saree",
-      category: "Textiles",
-      quantity: 15,
-      price: 1500,
-      lowStockThreshold: 5,
-      lastUpdated: new Date()
-    },
-    {
-      id: "2",
-      name: "Handmade Pottery",
-      category: "Crafts",
-      quantity: 3,
-      price: 800,
-      lowStockThreshold: 5,
-      lastUpdated: new Date()
-    },
-    {
-      id: "3",
-      name: "Spice Mix",
-      category: "Food",
-      quantity: 25,
-      price: 200,
-      lowStockThreshold: 10,
-      lastUpdated: new Date()
-    }
-  ]);
+  const { t } = useTranslation(language);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -129,6 +104,32 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
   const totalValue = products.reduce((sum, p) => sum + (p.quantity * p.price), 0);
   const totalItems = products.reduce((sum, p) => sum + p.quantity, 0);
 
+  const handleVoiceResult = (text: string, parsedData?: any) => {
+    // Parse voice commands like "Add 5 sarees to inventory" or "Stock 10 vegetables"
+    const addKeywords = ['add', 'stock', 'inventory', 'जोड़ें', 'स्टॉक'];
+    const lowercaseText = text.toLowerCase();
+    
+    if (addKeywords.some(keyword => lowercaseText.includes(keyword))) {
+      const quantityMatch = text.match(/(\d+)/);
+      const quantity = quantityMatch ? quantityMatch[1] : '';
+      
+      // Extract item name (remove numbers and keywords)
+      const itemName = text
+        .replace(/\d+/g, '')
+        .replace(/(add|stock|inventory|to|जोड़ें|स्टॉक|में)/gi, '')
+        .trim();
+      
+      setFormData({
+        name: itemName,
+        category: "",
+        quantity: quantity,
+        price: "",
+        lowStockThreshold: "5"
+      });
+      setShowForm(true);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -200,6 +201,16 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
         </Card>
       )}
 
+      {/* Voice Input */}
+      <VoiceInput
+        language={language}
+        onResult={handleVoiceResult}
+        placeholder={language === "hi" ? 
+          "जैसे: 5 साड़ी स्टॉक में जोड़ें" : 
+          "e.g: Add 5 sarees to stock"
+        }
+      />
+
       {/* Search and Add Button */}
       <div className="flex gap-2">
         <div className="flex-1 relative">
@@ -207,7 +218,7 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={language === "hi" ? "उत्पाद खोजें..." : "Search products..."}
+            placeholder={t('common.search') + "..."}
             className="pl-10"
           />
         </div>
@@ -216,9 +227,10 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
             resetForm();
             setShowForm(!showForm);
           }}
+          className="bg-gradient-primary hover:scale-105 transition-all duration-300 shadow-glow"
         >
           <Plus className="h-4 w-4 mr-2" />
-          {language === "hi" ? "जोड़ें" : "Add"}
+          {t('common.add')}
         </Button>
       </div>
 
