@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Globe, Check } from "lucide-react";
+import { Globe, Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -69,45 +69,44 @@ export function LanguageSelector({ selectedLanguage, onLanguageSelect, showOnboa
     );
   }
 
+  // Styled native select to match website theme
   return (
     <div className="relative">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2"
+      <select
+        value={selectedLanguage}
+        onChange={(e) => {
+          onLanguageSelect(e.target.value);
+        }}
+        className="
+          appearance-none cursor-pointer
+          bg-card/80 backdrop-blur-sm
+          border-2 border-primary/20 hover:border-primary/40
+          rounded-lg px-3 py-2 pr-10
+          text-sm font-medium
+          text-foreground
+          shadow-warm hover:shadow-lg
+          transition-all duration-200
+          focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary
+          hover:scale-[1.02]
+          dark:bg-gray-800/80 dark:border-primary/30 dark:hover:border-primary/50
+          min-w-[120px]
+        "
       >
-        <Globe className="h-4 w-4" />
-        {languages.find(l => l.code === selectedLanguage)?.nativeName || "Language"}
-      </Button>
-      
-      {isOpen && (
-        <Card className="absolute top-full left-0 mt-2 w-64 z-50 shadow-warm">
-          <CardContent className="p-2">
-            <div className="space-y-1 max-h-48 overflow-y-auto">
-              {languages.map((lang) => (
-                <Button
-                  key={lang.code}
-                  variant={selectedLanguage === lang.code ? "default" : "ghost"}
-                  className="w-full justify-start h-auto p-2"
-                  onClick={() => {
-                    onLanguageSelect(lang.code);
-                    setIsOpen(false);
-                  }}
-                >
-                  <div className="text-left">
-                    <div className="font-medium text-sm">{lang.nativeName}</div>
-                    <div className="text-xs opacity-70">{lang.name}</div>
-                  </div>
-                  {selectedLanguage === lang.code && (
-                    <Check className="h-3 w-3 ml-auto" />
-                  )}
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+        {languages.map((lang) => (
+          <option
+            key={lang.code}
+            value={lang.code}
+            className="bg-background text-foreground py-2 dark:bg-gray-800 dark:text-white"
+          >
+            {lang.nativeName}
+          </option>
+        ))}
+      </select>
+
+      {/* Custom dropdown arrow with globe icon */}
+      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <Globe className="h-4 w-4 text-primary animate-glow" />
+      </div>
     </div>
   );
 }

@@ -44,40 +44,32 @@ export function FeaturesSection({ language }: FeaturesSectionProps) {
     },
     {
       icon: Mic,
-      title: language === "hi" ? "वॉइस सपोर्ट" : "Voice Support",
-      description: language === "hi" ? 
-        "अपनी आवाज़ से डेटा एंट्री करें, कमांड दें" : 
-        "Add data and give commands using your voice",
+      title: t('features.voice.title'),
+      description: t('features.voice.desc'),
       color: "text-violet-500",
       bgColor: "bg-violet-500/10",
       gradient: "bg-gradient-to-r from-violet-500 to-purple-600"
     },
     {
       icon: Globe,
-      title: language === "hi" ? "9+ भाषाएं" : "9+ Languages",
-      description: language === "hi" ? 
-        "अपनी पसंदीदा भारतीय भाषा में उपयोग करें" : 
-        "Use in your preferred Indian language",
+      title: t('features.languages.title'),
+      description: t('features.languages.desc'),
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
       gradient: "bg-gradient-to-r from-emerald-500 to-teal-600"
     },
     {
       icon: Zap,
-      title: language === "hi" ? "तेज़ & सरल" : "Fast & Simple",
-      description: language === "hi" ? 
-        "बिना कठिनाई के तुरंत उपयोग शुरू करें" : 
-        "Start using immediately without any difficulty",
+      title: t('features.fast.title'),
+      description: t('features.fast.desc'),
       color: "text-amber-500",
       bgColor: "bg-amber-500/10",
       gradient: "bg-gradient-to-r from-amber-500 to-orange-600"
     },
     {
       icon: Shield,
-      title: language === "hi" ? "सुरक्षित डेटा" : "Secure Data",
-      description: language === "hi" ? 
-        "आपकी जानकारी 100% सुरक्षित और निजी है" : 
-        "Your information is 100% secure and private",
+      title: t('features.secure.title'),
+      description: t('features.secure.desc'),
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
       gradient: "bg-gradient-to-r from-blue-500 to-indigo-600"
@@ -94,12 +86,7 @@ export function FeaturesSection({ language }: FeaturesSectionProps) {
               {t('features.title')}
             </span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {language === "hi" ? 
-              "सफल व्यापारी बनने के लिए आवश्यक सभी टूल्स एक ही जगह" :
-              "All the essential tools you need to become a successful entrepreneur in one place"
-            }
-          </p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t('features.subtitle')}</p>
         </div>
 
         {/* Features Grid */}
@@ -138,18 +125,8 @@ export function FeaturesSection({ language }: FeaturesSectionProps) {
         <div className="text-center mt-16 animate-fade-in animation-delay-600">
           <Card className="inline-block bg-gradient-primary/5 border-primary/20 shadow-glow">
             <CardContent className="p-6">
-              <p className="text-lg font-medium mb-2">
-                {language === "hi" ? 
-                  "आज ही शुरू करें और अपने व्यापार को नई ऊंचाइयों तक ले जाएं!" :
-                  "Start today and take your business to new heights!"
-                }
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {language === "hi" ? 
-                  "50,000+ महिला उद्यमी पहले से ही BizSakhi का उपयोग कर रही हैं" :
-                  "50,000+ women entrepreneurs are already using BizSakhi"
-                }
-              </p>
+              <p className="text-lg font-medium mb-2">{t('features.subtitle')}</p>
+              <p className="text-sm text-muted-foreground">{t('homepage.features')}</p>
             </CardContent>
           </Card>
         </div>

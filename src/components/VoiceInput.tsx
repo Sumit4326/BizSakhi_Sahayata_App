@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Mic, MicOff, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-
-// Declare global interface for Speech Recognition
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-}
+import { useTranslation } from "@/utils/translations";
 
 interface VoiceInputProps {
   onTranscript: (text: string) => void;
@@ -17,69 +10,131 @@ interface VoiceInputProps {
   language?: string;
 }
 
+// Check if Web Speech API is supported
+const isWebSpeechSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+
 export function VoiceInput({ onTranscript, placeholder = "Speak...", language = "hi-IN" }: VoiceInputProps) {
   const [isListening, setIsListening] = useState(false);
-  const [recognition, setRecognition] = useState<any>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const { t } = useTranslation(language);
 
+  // Initialize Web Speech API
   useEffect(() => {
-    if (typeof window !== "undefined" && "SpeechRecognition" in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = language === "hi" ? "hi-IN" : "en-IN";
+    if (!isWebSpeechSupported) return;
 
-      recognition.onstart = () => {
-        setIsListening(true);
-        toast({
-          title: language === "hi" ? "सुन रहा हूँ..." : "Listening...",
-          description: language === "hi" ? "अब बोलें" : "Speak now",
-        });
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    // Configure for fast, real-time recognition
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    // Map language codes to speech recognition language codes
+    const speechLangMap: { [key: string]: string } = {
+      'en': 'en-US',
+      'hi': 'hi-IN',
+      'ta': 'ta-IN',  // Tamil (India)
+      'ml': 'ml-IN',  // Malayalam (India)
+      'te': 'te-IN',  // Telugu (India)
+      'kn': 'kn-IN',  // Kannada (India)
+      'gu': 'gu-IN',  // Gujarati (India)
+      'bn': 'bn-IN',  // Bengali (India)
+      'mr': 'mr-IN'   // Marathi (India)
+    };
+
+    recognition.lang = speechLangMap[language] || 'en-US';
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setIsProcessing(false);
+
+      const langNames: { [key: string]: string } = {
+        'en': 'English',
+        'hi': 'हिन्दी',
+        'ta': 'தமிழ்',
+        'ml': 'മലയാളം',
+        'te': 'తెలుగు',
+        'kn': 'ಕನ್ನಡ',
+        'gu': 'ગુજરાતી',
+        'bn': 'বাংলা',
+        'mr': 'मराठी'
       };
 
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        onTranscript(transcript);
-        setIsListening(false);
-        toast({
-          title: language === "hi" ? "सुन लिया!" : "Got it!",
-          description: transcript,
-        });
-      };
+      toast({
+        title: `🎤 ${t('voice.listening')}`,
+        description: `${t('voice.speakNow')} (${langNames[language] || language})`,
+      });
+    };
 
-      recognition.onerror = (event) => {
-        setIsListening(false);
-        toast({
-          title: language === "hi" ? "त्रुटि" : "Error",
-          description: language === "hi" ? "आवाज़ नहीं सुन पाया" : "Could not hear you clearly",
-          variant: "destructive",
-        });
-      };
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      const confidence = event.results[0][0].confidence;
 
-      recognition.onend = () => {
-        setIsListening(false);
-      };
+      onTranscript(transcript);
 
-      setRecognition(recognition);
-    }
+      toast({
+        title: `✅ ${t('voice.gotIt') || 'Got it!'}`,
+        description: `"${transcript}" (${Math.round(confidence * 100)}% confident)`,
+      });
+    };
+
+    recognition.onerror = (event) => {
+      // Only log non-aborted errors to reduce console noise
+      if (event.error !== 'aborted') {
+        console.error("Speech recognition error:", event.error);
+      }
+      setIsListening(false);
+      setIsProcessing(false);
+
+      let errorMessage = t('voice.couldNotHear') || 'Could not hear you clearly';
+
+      if (event.error === 'no-speech') {
+        errorMessage = t('voice.noSpeech') || 'No speech detected';
+      } else if (event.error === 'network') {
+        errorMessage = t('voice.networkError') || 'Network error';
+      }
+
+      toast({
+        title: `❌ ${t('common.error')}`,
+        description: errorMessage,
+        variant: "destructive",
+      });
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      setIsProcessing(false);
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
   }, [language, onTranscript]);
 
   const startListening = () => {
-    if (recognition) {
-      recognition.start();
-    } else {
+    if (!isWebSpeechSupported) {
       toast({
         title: language === "hi" ? "समर्थित नहीं" : "Not Supported",
-        description: language === "hi" ? "आपका ब्राउज़र वॉयस इनपुट समर्थित नहीं करता" : "Your browser doesn't support voice input",
+        description: language === "hi" ? "आपका ब्राउज़र वॉइस इनपुट को सपोर्ट नहीं करता" : "Your browser doesn't support voice input",
         variant: "destructive",
       });
+      return;
+    }
+
+    if (recognitionRef.current && !isListening) {
+      recognitionRef.current.start();
     }
   };
 
   const stopListening = () => {
-    if (recognition) {
-      recognition.stop();
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
     }
   };
 
@@ -89,19 +144,34 @@ export function VoiceInput({ onTranscript, placeholder = "Speak...", language = 
       variant={isListening ? "destructive" : "outline"}
       size="sm"
       onClick={isListening ? stopListening : startListening}
+      disabled={isProcessing || !isWebSpeechSupported}
       className={`transition-all duration-200 ${isListening ? "animate-pulse" : "hover:scale-105"}`}
+      title={!isWebSpeechSupported ? (language === "hi" ? "वॉइस इनपुट समर्थित नहीं" : "Voice input not supported") : ""}
     >
-      {isListening ? (
+      {isProcessing ? (
+        <>
+          <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+          <span>{t('common.loading')}</span>
+        </>
+      ) : isListening ? (
         <>
           <MicOff className="h-4 w-4" />
-          <span className="ml-2">{language === "hi" ? "रोकें" : "Stop"}</span>
+          <span className="ml-2">{t('voice.stop') || (language === "hi" ? "रोकें" : "Stop")}</span>
         </>
       ) : (
         <>
           <Mic className="h-4 w-4" />
-          <span className="ml-2">{language === "hi" ? "बोलें" : "Speak"}</span>
+          <span className="ml-2">🚀 {t('voice.speak') || (language === "hi" ? "बोलें" : "Speak")}</span>
         </>
       )}
     </Button>
   );
+}
+
+// Add type declarations for Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
 }

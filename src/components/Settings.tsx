@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { User, Globe, Volume2, Smartphone, Info, Heart } from "lucide-react";
+import { useState, useEffect } from "react";
+import { User, Globe, Volume2, Smartphone, Info, Heart, LogOut } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { LanguageSelector } from "./LanguageSelector";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/utils/translations";
+import { apiCall } from "@/utils/api";
 
 interface UserProfile {
   name: string;
@@ -21,6 +25,11 @@ interface SettingsProps {
 }
 
 export function Settings({ language, onLanguageChange }: SettingsProps) {
+  const navigate = useNavigate();
+  const { signOut, user } = useAuth();
+  const { t } = useTranslation(language);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
     name: "",
     businessType: "",
@@ -39,6 +48,53 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
     voiceSpeed: "normal",
     voiceGender: "female"
   });
+
+  // Load user profile from backend
+  const loadUserProfile = async () => {
+    try {
+      setLoading(true);
+      
+      // First, try to get profile from user metadata (from signup)
+      const userMetadata = user?.user_metadata;
+      if (userMetadata) {
+        setProfile({
+          name: userMetadata.full_name || "",
+          businessType: userMetadata.business_type || "",
+          region: userMetadata.location || "",
+          phone: userMetadata.phone || ""
+        });
+      }
+      
+      // Then try to get updated profile from backend
+      const response = await apiCall('/api/profile');
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.profile) {
+          // Update with backend data (this will override metadata if backend has more recent data)
+          setProfile({
+            name: data.profile.name || userMetadata?.full_name || "",
+            businessType: data.profile.businessType || userMetadata?.business_type || "",
+            region: data.profile.region || userMetadata?.location || "",
+            phone: data.profile.phone || userMetadata?.phone || ""
+          });
+        }
+      } else {
+        console.error('Failed to load profile from backend:', response.status);
+        // If backend fails, we still have the metadata data loaded above
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      // If everything fails, we still have the metadata data loaded above
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load profile on component mount
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
 
   const businessTypes = language === "hi" ? [
     "कपड़े की दुकान",
@@ -84,10 +140,113 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
     "Other"
   ];
 
-  const handleSaveProfile = () => {
-    // In real app, this would save to backend
-    console.log("Saving profile:", profile);
+  // Helper function to get unique business types including user's custom value
+  const getUniqueBusinessTypes = () => {
+    const userBusinessType = profile.businessType;
+    if (userBusinessType && !businessTypes.includes(userBusinessType)) {
+      return [userBusinessType, ...businessTypes];
+    }
+    return businessTypes;
   };
+
+  // Helper function to get unique regions including user's custom value
+  const getUniqueRegions = () => {
+    const userRegion = profile.region;
+    if (userRegion && !regions.includes(userRegion)) {
+      return [userRegion, ...regions];
+    }
+    return regions;
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true);
+      const response = await apiCall('/api/profile', {
+        method: 'PUT',
+        body: JSON.stringify(profile)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          console.log('✅ Profile saved successfully');
+          alert(language === "hi" ? "जानकारी सहेजी गई!" : "Information saved!");
+        } else {
+          console.error('❌ Failed to save profile:', data.error);
+          alert(language === "hi" ? "जानकारी सहेजने में त्रुटि" : "Error saving information");
+        }
+      } else {
+        console.error('❌ Failed to save profile:', response.status);
+        alert(language === "hi" ? "जानकारी सहेजने में त्रुटि" : "Error saving information");
+      }
+    } catch (error) {
+      console.error('❌ Error saving profile:', error);
+      alert(language === "hi" ? "जानकारी सहेजने में त्रुटि" : "Error saving information");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      setSaving(true);
+      const settings = {
+        notifications,
+        voiceSettings,
+        language
+      };
+
+      const response = await apiCall('/api/settings', {
+        method: 'POST',
+        body: JSON.stringify(settings)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          console.log('✅ Settings saved successfully');
+          alert(language === "hi" ? "सेटिंग्स सहेजी गईं!" : "Settings saved!");
+        } else {
+          console.error('❌ Failed to save settings:', data.error);
+          alert(language === "hi" ? "सेटिंग्स सहेजने में त्रुटि" : "Error saving settings");
+        }
+      } else {
+        console.error('❌ Failed to save settings:', response.status);
+        alert(language === "hi" ? "सेटिंग्स सहेजने में त्रुटि" : "Error saving settings");
+      }
+    } catch (error) {
+      console.error('❌ Error saving settings:', error);
+      alert(language === "hi" ? "सेटिंग्स सहेजने में त्रुटि" : "Error saving settings");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6 pb-20 lg:pb-6">
+        <Card className="shadow-card">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-muted-foreground">
+                {language === "hi" ? "लोड हो रहा है..." : "Loading..."}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-20 lg:pb-6">
@@ -98,6 +257,12 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
             <User className="h-5 w-5" />
             {language === "hi" ? "व्यक्तिगत जानकारी" : "Personal Information"}
           </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {language === "hi" 
+              ? "आपकी खाता जानकारी यहाँ लोड की गई है। आप इसे अपडेट कर सकते हैं।"
+              : "Your account information has been loaded here. You can update it."
+            }
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -105,7 +270,7 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
             <Input
               value={profile.name}
               onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}
-              placeholder={language === "hi" ? "अपना नाम दर्ज करें" : "Enter your name"}
+              placeholder={language === "hi" ? "अपना नाम दर्ज करें" : language === "ta" ? "உங்கள் பெயரை உள்ளிடவும்" : language === "ml" ? "നിങ്ങളുടെ പേര് നൽകുക" : "Enter your name"}
             />
           </div>
 
@@ -118,7 +283,7 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
                 <SelectValue placeholder={language === "hi" ? "व्यापार चुनें" : "Select business type"} />
               </SelectTrigger>
               <SelectContent>
-                {businessTypes.map((type, index) => (
+                {getUniqueBusinessTypes().map((type, index) => (
                   <SelectItem key={index} value={type}>
                     {type}
                   </SelectItem>
@@ -136,7 +301,7 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
                 <SelectValue placeholder={language === "hi" ? "राज्य चुनें" : "Select state"} />
               </SelectTrigger>
               <SelectContent>
-                {regions.map((region, index) => (
+                {getUniqueRegions().map((region, index) => (
                   <SelectItem key={index} value={region}>
                     {region}
                   </SelectItem>
@@ -155,8 +320,15 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
             />
           </div>
 
-          <Button onClick={handleSaveProfile} className="w-full">
-            {language === "hi" ? "जानकारी सहेजें" : "Save Information"}
+          <Button onClick={handleSaveProfile} className="w-full" disabled={saving}>
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                {language === "hi" ? "सहेज रहा है..." : "Saving..."}
+              </>
+            ) : (
+              language === "hi" ? "जानकारी सहेजें" : "Save Information"
+            )}
           </Button>
         </CardContent>
       </Card>
@@ -226,6 +398,18 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
               </SelectContent>
             </Select>
           </div>
+        </CardContent>
+        <CardContent className="pt-0">
+          <Button onClick={handleSaveSettings} className="w-full" disabled={saving}>
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                {language === "hi" ? "सहेज रहा है..." : "Saving..."}
+              </>
+            ) : (
+              language === "hi" ? "आवाज़ सेटिंग्स सहेजें" : "Save Voice Settings"
+            )}
+          </Button>
         </CardContent>
       </Card>
 
@@ -298,6 +482,18 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
             />
           </div>
         </CardContent>
+        <CardContent className="pt-0">
+          <Button onClick={handleSaveSettings} className="w-full" disabled={saving}>
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                {language === "hi" ? "सहेज रहा है..." : "Saving..."}
+              </>
+            ) : (
+              language === "hi" ? "सूचना सेटिंग्स सहेजें" : "Save Notification Settings"
+            )}
+          </Button>
+        </CardContent>
       </Card>
 
       {/* About Section */}
@@ -324,6 +520,28 @@ export function Settings({ language, onLanguageChange }: SettingsProps) {
             </p>
             <p className="text-sm text-muted-foreground">
               {language === "hi" ? "संस्करण 1.0.0" : "Version 1.0.0"}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Logout Section */}
+      <Card className="shadow-card border-destructive/20">
+        <CardContent className="p-6">
+          <div className="text-center">
+            <Button 
+              variant="destructive" 
+              onClick={handleLogout}
+              className="w-full"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              {language === "hi" ? "लॉग आउट करें" : "Logout"}
+            </Button>
+            <p className="text-sm text-muted-foreground mt-2">
+              {language === "hi" 
+                ? "अपने खाते से बाहर निकलें"
+                : "Sign out of your account"
+              }
             </p>
           </div>
         </CardContent>

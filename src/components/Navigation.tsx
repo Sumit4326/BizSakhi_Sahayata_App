@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LanguageSelector } from "./LanguageSelector";
 import { ThemeToggle } from "./ThemeToggle";
+import { useTranslation } from "@/utils/translations";
 
 interface NavigationProps {
   activeTab: string;
@@ -13,20 +14,21 @@ interface NavigationProps {
 }
 
 const tabs = [
-  { id: "home", icon: Flower2, nameEn: "Home", nameHi: "होम" },
-  { id: "chat", icon: MessageSquare, nameEn: "Sakhi Chat", nameHi: "सखी चैट" },
-  { id: "income", icon: TrendingUp, nameEn: "Income/Expense", nameHi: "आय/व्यय" },
-  { id: "inventory", icon: Package, nameEn: "Inventory", nameHi: "स्टॉक" },
-  { id: "tips", icon: Lightbulb, nameEn: "Daily Tips", nameHi: "दैनिक सुझाव" },
-  { id: "loans", icon: HelpCircle, nameEn: "Loan Help", nameHi: "लोन सहायता" },
-  { id: "settings", icon: Settings, nameEn: "Settings", nameHi: "सेटिंग्स" },
+  { id: "home", icon: Flower2, translationKey: "nav.home" },
+  { id: "chat", icon: MessageSquare, translationKey: "nav.chat" },
+  { id: "income", icon: TrendingUp, translationKey: "nav.income" },
+  { id: "inventory", icon: Package, translationKey: "nav.inventory" },
+  { id: "tips", icon: Lightbulb, translationKey: "nav.tips" },
+  { id: "loans", icon: HelpCircle, translationKey: "nav.loans" },
+  { id: "settings", icon: Settings, translationKey: "nav.settings" },
 ];
 
 export function Navigation({ activeTab, onTabChange, language, onLanguageChange }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useTranslation(language);
 
   const getTabName = (tab: typeof tabs[0]) => {
-    return language === "hi" ? tab.nameHi : tab.nameEn;
+    return t(tab.translationKey as any);
   };
 
   return (
@@ -35,9 +37,7 @@ export function Navigation({ activeTab, onTabChange, language, onLanguageChange 
       <div className="lg:hidden bg-gradient-card border-b border-primary/10 shadow-warm p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow animate-pulse-slow">
-              <Flower2 className="h-4 w-4 text-white" />
-            </div>
+            <img src="/logo.png" alt="BizSakhi logo" className="h-8 w-8 rounded object-cover shadow-glow" />
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               BizSakhi
             </h1>
@@ -108,9 +108,7 @@ export function Navigation({ activeTab, onTabChange, language, onLanguageChange 
         {/* Logo Header */}
         <div className="p-6 border-b border-primary/10">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 bg-gradient-primary rounded-full flex items-center justify-center animate-glow shadow-glow">
-              <Flower2 className="h-5 w-5 text-white animate-float" />
-            </div>
+            <img src="/logo.png" alt="BizSakhi logo" className="h-10 w-10 rounded object-cover animate-glow shadow-glow" />
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               BizSakhi
             </h1>

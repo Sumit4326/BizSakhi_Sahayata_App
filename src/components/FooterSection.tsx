@@ -11,35 +11,6 @@ export function FooterSection({ language }: FooterSectionProps) {
   return (
     <footer className="bg-gradient-card border-t border-primary/10">
       <div className="container mx-auto px-4 py-16">
-        {/* Newsletter Section */}
-        <Card className="mb-12 bg-gradient-primary/5 border-primary/20 shadow-warm">
-          <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">
-              {language === "hi" ? 
-                "व्यापारिक सुझावों के लिए सदस्यता लें" : 
-                "Subscribe for Business Tips"
-              }
-            </h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              {language === "hi" ? 
-                "हर सप्ताह नए व्यापारिक सुझाव, सफलता की कहानियां और अपडेट्स पाएं" :
-                "Get weekly business tips, success stories and updates"
-              }
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder={language === "hi" ? "अपना ईमेल डालें" : "Enter your email"}
-                className="flex-1"
-              />
-              <Button className="bg-gradient-primary hover:scale-105 transition-transform">
-                <Mail className="h-4 w-4 mr-2" />
-                {language === "hi" ? "सदस्यता लें" : "Subscribe"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}

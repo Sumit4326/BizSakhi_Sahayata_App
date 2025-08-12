@@ -15,21 +15,21 @@ export function TestimonialsSection({ language }: TestimonialsSectionProps) {
       author: t('testimonials.1.author'),
       rating: 5,
       image: "👩‍💼",
-      business: language === "hi" ? "सिलाई व्यापार" : "Tailoring Business"
+      business: t('testimonials.1.business')
     },
     {
       text: t('testimonials.2.text'),
       author: t('testimonials.2.author'),
       rating: 5,
       image: "👩‍🌾",
-      business: language === "hi" ? "कृषि व्यापार" : "Agriculture Business"
+      business: t('testimonials.2.business')
     },
     {
       text: t('testimonials.3.text'),
       author: t('testimonials.3.author'),
       rating: 5,
       image: "👩‍🍳",
-      business: language === "hi" ? "सब्जी व्यापार" : "Vegetable Business"
+      business: t('testimonials.3.business')
     }
   ];
 
@@ -43,12 +43,7 @@ export function TestimonialsSection({ language }: TestimonialsSectionProps) {
               {t('testimonials.title')}
             </span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {language === "hi" ? 
-              "देखिए कैसे BizSakhi ने हज़ारों महिलाओं के जीवन को बदला है" :
-              "See how BizSakhi has transformed the lives of thousands of women"
-            }
-          </p>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t('testimonials.subtitle')}</p>
         </div>
 
         {/* Testimonials Grid */}
@@ -95,45 +90,6 @@ export function TestimonialsSection({ language }: TestimonialsSectionProps) {
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        {/* Bottom Stats */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6 animate-fade-in animation-delay-600">
-          <Card className="bg-primary/5 border-primary/20 shadow-card">
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">4.8⭐</div>
-              <div className="text-sm text-muted-foreground">
-                {language === "hi" ? "औसत रेटिंग" : "Average Rating"}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-secondary/5 border-secondary/20 shadow-card">
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-secondary mb-2">10K+</div>
-              <div className="text-sm text-muted-foreground">
-                {language === "hi" ? "समीक्षाएं" : "Reviews"}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-accent/5 border-accent/20 shadow-card">
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-accent mb-2">95%</div>
-              <div className="text-sm text-muted-foreground">
-                {language === "hi" ? "संतुष्टि दर" : "Satisfaction Rate"}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-warning/5 border-warning/20 shadow-card">
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-warning mb-2">24/7</div>
-              <div className="text-sm text-muted-foreground">
-                {language === "hi" ? "सहायता" : "Support"}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </section>

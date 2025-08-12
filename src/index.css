@@ -50,6 +50,7 @@ All colors MUST be HSL.
     --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted) / 0.3), hsl(var(--primary) / 0.05));
     --gradient-festive: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background) / 0.8), hsl(var(--muted) / 0.6));
+    --gradient-radial: radial-gradient(ellipse at center, hsl(var(--background)), hsl(var(--muted)));
     
     /* Enhanced shadows with warm tones */
     --shadow-warm: 0 8px 32px hsl(var(--primary) / 0.15);
@@ -124,5 +125,162 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Custom utility classes */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .bg-gradient-festive {
+    background: var(--gradient-festive);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .bg-gradient-radial {
+    background: var(--gradient-radial);
+  }
+  
+  .shadow-warm {
+    box-shadow: var(--shadow-warm);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .text-gradient-primary {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .bg-gradient-primary-glow {
+    background: hsl(var(--primary-glow));
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes glow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+  
+  .transition-all {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover\:scale-105:hover {
+    transform: scale(1.05);
+  }
+  
+  .hover\:scale-110:hover {
+    transform: scale(1.1);
+  }
+  
+  .hover\:scale-\[1\.02\]:hover {
+    transform: scale(1.02);
+  }
+
+  /* Custom prose styles for chat messages */
+  .prose-chat {
+    @apply prose prose-sm max-w-none;
+  }
+
+  .prose-chat h1,
+  .prose-chat h2,
+  .prose-chat h3,
+  .prose-chat h4,
+  .prose-chat h5,
+  .prose-chat h6 {
+    @apply text-foreground font-semibold mb-2;
+  }
+
+  .prose-chat p {
+    @apply text-foreground mb-2 leading-relaxed;
+  }
+
+  .prose-chat strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .prose-chat em {
+    @apply italic text-foreground;
+  }
+
+  .prose-chat ul,
+  .prose-chat ol {
+    @apply mb-2 pl-4;
+  }
+
+  .prose-chat li {
+    @apply mb-1 text-foreground;
+  }
+
+  .prose-chat blockquote {
+    @apply border-l-4 border-primary pl-4 italic text-muted-foreground;
+  }
+
+  .prose-chat code {
+    @apply bg-muted px-1 py-0.5 rounded text-sm font-mono;
+  }
+
+  .prose-chat pre {
+    @apply bg-muted p-2 rounded text-sm overflow-x-auto;
   }
 }

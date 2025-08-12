@@ -15,24 +15,19 @@ import { useTranslation } from "@/utils/translations";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home");
-  const [language, setLanguage] = useState("");
-  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [language, setLanguage] = useState("en"); // Default to English
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const { t } = useTranslation(language);
 
   useEffect(() => {
-    // Check if user is logged in
-    const user = localStorage.getItem("bizsakhi-user");
-    if (!user) {
-      // Redirect to login page
-      window.location.href = "/login";
-      return;
-    }
-
     // Check if user has already selected language
     const savedLanguage = localStorage.getItem("bizsakhi-language");
     if (savedLanguage) {
       setLanguage(savedLanguage);
       setShowOnboarding(false);
+    } else {
+      // Show language selection onboarding for new users
+      setShowOnboarding(true);
     }
   }, []);
 

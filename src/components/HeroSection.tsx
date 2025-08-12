@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Sparkles, Heart, Star } from "lucide-react";
+import { ArrowRight, Sparkles, Heart, Star, MessageSquare, Smile, Headphones } from "lucide-react";
 import { useTranslation } from "@/utils/translations";
 import businessHero from "@/assets/business-hero.jpg";
 
@@ -73,35 +73,44 @@ export function HeroSection({ language, onGetStarted }: HeroSectionProps) {
                 {t('hero.cta')}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="h-14 px-8 border-primary/20 hover:bg-primary/5 backdrop-blur-sm hover:scale-105 transition-all duration-300"
-              >
-                {language === "hi" ? "डेमो देखें" : "Watch Demo"}
-              </Button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-8">
-              <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-primary">50K+</div>
-                <div className="text-sm text-muted-foreground">
-                  {language === "hi" ? "खुश उपयोगकर्ता" : "Happy Users"}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
+              {/* Average Rating */}
+              <div className="text-center rounded-xl border border-primary/10 bg-background/60 backdrop-blur-sm p-4 shadow-card">
+                <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold text-primary">
+                  4.8
+                  <Star className="h-5 w-5 text-primary" />
                 </div>
+                <div className="mt-1 text-sm text-muted-foreground">{t('stats.averageRating')}</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-secondary">₹10Cr+</div>
-                <div className="text-sm text-muted-foreground">
-                  {language === "hi" ? "ट्रैक किया गया" : "Tracked"}
+
+              {/* Reviews */}
+              <div className="text-center rounded-xl border border-secondary/10 bg-background/60 backdrop-blur-sm p-4 shadow-card">
+                <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold text-secondary">
+                  10K+
+                  <MessageSquare className="h-5 w-5 text-secondary" />
                 </div>
+                <div className="mt-1 text-sm text-muted-foreground">{t('stats.reviews')}</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-accent">9+</div>
-                <div className="text-sm text-muted-foreground">
-                  {language === "hi" ? "भाषाएं" : "Languages"}
+
+              {/* Satisfaction */}
+              <div className="text-center rounded-xl border border-accent/10 bg-background/60 backdrop-blur-sm p-4 shadow-card">
+                <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold text-accent">
+                  95%
+                  <Smile className="h-5 w-5 text-accent" />
                 </div>
+                <div className="mt-1 text-sm text-muted-foreground">{t('stats.satisfaction')}</div>
+              </div>
+
+              {/* Support */}
+              <div className="text-center rounded-xl border border-primary/10 bg-background/60 backdrop-blur-sm p-4 shadow-card">
+                <div className="flex items-center justify-center gap-2 text-2xl md:text-3xl font-bold text-primary">
+                  24/7
+                  <Headphones className="h-5 w-5 text-primary" />
+                </div>
+                <div className="mt-1 text-sm text-muted-foreground">{t('stats.support')}</div>
               </div>
             </div>
           </div>

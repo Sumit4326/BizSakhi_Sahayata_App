@@ -1,21 +1,24 @@
-import { useState } from "react";
-import { Plus, Package, Edit, Trash2, Search, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Package, Edit, Trash2, Search, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { VoiceInput } from "@/components/VoiceInput";
 import { useTranslation } from "@/utils/translations";
+import { apiCall, API_BASE_URL } from "@/utils/api";
+
+
 
 interface Product {
   id: string;
-  name: string;
-  category: string;
+  product_name: string;
   quantity: number;
-  price: number;
-  lowStockThreshold: number;
-  lastUpdated: Date;
+  unit: string;
+  cost_per_unit: number;
+  total_value: number;
+  is_low_stock: boolean;
+  user_id: string;
 }
 
 interface InventoryManagementProps {
@@ -25,6 +28,8 @@ interface InventoryManagementProps {
 export function InventoryManagement({ language }: InventoryManagementProps) {
   const { t } = useTranslation(language);
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalValue, setTotalValue] = useState(0);
 
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -37,6 +42,54 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
     lowStockThreshold: ""
   });
 
+  // Fetch inventory data from backend
+  const fetchInventoryData = async () => {
+    try {
+      setLoading(true);
+      const response = await apiCall('/api/summary/inventory');
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+                     // Ensure each item has the required properties
+           const validItems = (data.items || []).map((item: any) => {
+             
+             
+                           const mappedItem = {
+                id: item.id || Date.now().toString(),
+                product_name: item.product_name || item.name || item.item_name || 'Unknown Product',
+                quantity: item.quantity || 0,
+                unit: item.unit || 'pieces',
+                cost_per_unit: parseFloat(item.cost_per_unit) || parseFloat(item.unit_price) || parseFloat(item.price) || parseFloat(item.cost) || 0,
+                total_value: parseFloat(item.total_value) || (parseFloat(item.quantity || 0) * (parseFloat(item.cost_per_unit) || parseFloat(item.unit_price) || parseFloat(item.price) || parseFloat(item.cost) || 0)),
+                is_low_stock: item.is_low_stock || false,
+                user_id: item.user_id || 'default'
+              };
+             
+             
+             return mappedItem;
+           });
+          setProducts(validItems);
+          setTotalValue(data.total_value || 0);
+          console.log('✅ Inventory data loaded:', validItems.length, 'items');
+        } else {
+          console.error('❌ API returned error:', data.error);
+        }
+      } else {
+        console.error('❌ Failed to fetch inventory:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching inventory:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load inventory data on component mount
+  useEffect(() => {
+    fetchInventoryData();
+  }, []);
+
   const resetForm = () => {
     setFormData({
       name: "",
@@ -48,31 +101,48 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
     setEditingProduct(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.quantity || !formData.price) return;
 
-    const productData = {
-      name: formData.name,
-      category: formData.category || "General",
-      quantity: parseInt(formData.quantity),
-      price: parseFloat(formData.price),
-      lowStockThreshold: parseInt(formData.lowStockThreshold) || 5,
-      lastUpdated: new Date()
-    };
+         try {
+       // Send to backend
+       const endpoint = editingProduct ? `/api/inventory/${editingProduct.id}` : '/api/inventory';
+       const method = editingProduct ? 'PUT' : 'POST';
+       
+       const response = await apiCall(endpoint, {
+         method: method,
+         body: JSON.stringify({
+           product_name: formData.name,
+           quantity: parseInt(formData.quantity),
+           cost_per_unit: parseFloat(formData.price),
+           unit: formData.category || "pieces"
+         })
+       });
 
-    if (editingProduct) {
-      setProducts(prev => prev.map(p => 
-        p.id === editingProduct.id 
-          ? { ...p, ...productData }
-          : p
-      ));
-    } else {
-      const newProduct: Product = {
-        id: Date.now().toString(),
-        ...productData
-      };
-      setProducts(prev => [newProduct, ...prev]);
+             if (response.ok) {
+         const result = await response.json();
+         if (result.success) {
+           console.log(`✅ Item ${editingProduct ? 'updated' : 'added'} successfully`);
+           
+           // Refresh backend data to get the latest state
+           fetchInventoryData();
+         } else {
+           console.error('❌ API returned error:', result.error);
+           alert(language === "hi" ? 
+             `आइटम ${editingProduct ? 'अपडेट' : 'जोड़ने'} में त्रुटि` : 
+             `Error ${editingProduct ? 'updating' : 'adding'} item`
+           );
+         }
+       } else {
+         console.error('❌ Failed to submit item:', response.status);
+         alert(language === "hi" ? 
+           `आइटम ${editingProduct ? 'अपडेट' : 'जोड़ने'} में त्रुटि` : 
+           `Error ${editingProduct ? 'updating' : 'adding'} item`
+         );
+       }
+    } catch (error) {
+      console.error('Error submitting inventory item:', error);
     }
 
     resetForm();
@@ -82,53 +152,63 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setFormData({
-      name: product.name,
-      category: product.category,
+      name: product.product_name,
+      category: product.unit,
       quantity: product.quantity.toString(),
-      price: product.price.toString(),
-      lowStockThreshold: product.lowStockThreshold.toString()
+      price: product.cost_per_unit.toString(),
+      lowStockThreshold: "5" // Default threshold
     });
     setShowForm(true);
   };
 
-  const handleDelete = (id: string) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
-  };
+  const handleDelete = async (id: string) => {
+    // Show confirmation dialog
+    if (!confirm(language === "hi" ? "क्या आप वाकई इस आइटम को हटाना चाहते हैं?" : "Are you sure you want to delete this item?")) {
+      return;
+    }
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const lowStockProducts = products.filter(p => p.quantity <= p.lowStockThreshold);
-  const totalValue = products.reduce((sum, p) => sum + (p.quantity * p.price), 0);
-  const totalItems = products.reduce((sum, p) => sum + p.quantity, 0);
-
-  const handleVoiceResult = (text: string, parsedData?: any) => {
-    // Parse voice commands like "Add 5 sarees to inventory" or "Stock 10 vegetables"
-    const addKeywords = ['add', 'stock', 'inventory', 'जोड़ें', 'स्टॉक'];
-    const lowercaseText = text.toLowerCase();
-    
-    if (addKeywords.some(keyword => lowercaseText.includes(keyword))) {
-      const quantityMatch = text.match(/(\d+)/);
-      const quantity = quantityMatch ? quantityMatch[1] : '';
-      
-      // Extract item name (remove numbers and keywords)
-      const itemName = text
-        .replace(/\d+/g, '')
-        .replace(/(add|stock|inventory|to|जोड़ें|स्टॉक|में)/gi, '')
-        .trim();
-      
-      setFormData({
-        name: itemName,
-        category: "",
-        quantity: quantity,
-        price: "",
-        lowStockThreshold: "5"
+    try {
+      // Delete from backend
+      const response = await apiCall(`/api/inventory/${id}`, {
+        method: 'DELETE'
       });
-      setShowForm(true);
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // Remove from local state
+          setProducts(prev => prev.filter(p => p.id !== id));
+          console.log('✅ Item deleted successfully');
+        } else {
+          console.error('❌ Failed to delete item:', result.error);
+          alert(language === "hi" ? "आइटम हटाने में त्रुटि" : "Error deleting item");
+        }
+      } else {
+        console.error('❌ Failed to delete item:', response.status);
+        alert(language === "hi" ? "आइटम हटाने में त्रुटि" : "Error deleting item");
+      }
+    } catch (error) {
+      console.error('❌ Error deleting item:', error);
+      alert(language === "hi" ? "आइटम हटाने में त्रुटि" : "Error deleting item");
     }
   };
+
+  const filteredProducts = products.filter(product => {
+    const name = product.product_name?.trim();
+    const isValidName = name && name.length > 0;
+    const matchesSearch = !searchTerm || name?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    
+    
+    return isValidName && matchesSearch;
+  });
+
+  const lowStockProducts = products.filter(p => 
+    p.is_low_stock && 
+    p.product_name && 
+    p.product_name.trim() !== 'Unknown Product'
+  );
+  const totalItems = products.reduce((sum, p) => sum + p.quantity, 0);
 
   return (
     <div className="space-y-6">
@@ -188,28 +268,18 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {lowStockProducts.map((product) => (
-                <div key={product.id} className="flex justify-between items-center p-2 bg-destructive/10 rounded">
-                  <span className="font-medium">{product.name}</span>
-                  <Badge variant="destructive">
-                    {product.quantity} {language === "hi" ? "बचे हैं" : "left"}
-                  </Badge>
-                </div>
-              ))}
+                             {lowStockProducts.map((product) => (
+                 <div key={product.id} className="flex justify-between items-center p-2 bg-destructive/10 rounded">
+                   <span className="font-medium">{product.product_name || 'Unknown Product'}</span>
+                   <Badge variant="destructive">
+                     {product.quantity} {product.unit || 'pieces'} {language === "hi" ? "बचे हैं" : "left"}
+                   </Badge>
+                 </div>
+               ))}
             </div>
           </CardContent>
         </Card>
       )}
-
-      {/* Voice Input */}
-      <VoiceInput
-        language={language}
-        onResult={handleVoiceResult}
-        placeholder={language === "hi" ? 
-          "जैसे: 5 साड़ी स्टॉक में जोड़ें" : 
-          "e.g: Add 5 sarees to stock"
-        }
-      />
 
       {/* Search and Add Button */}
       <div className="flex gap-2">
@@ -223,14 +293,20 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
           />
         </div>
         <Button
-          onClick={() => {
-            resetForm();
-            setShowForm(!showForm);
-          }}
+          onClick={() => setShowForm(true)}
           className="bg-gradient-primary hover:scale-105 transition-all duration-300 shadow-glow"
         >
           <Plus className="h-4 w-4 mr-2" />
-          {t('common.add')}
+          {language === "hi" ? "जोड़ें" : "Add"}
+        </Button>
+        <Button
+          onClick={fetchInventoryData}
+          variant="outline"
+          className="shadow-button"
+          disabled={loading}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          {t('common.refresh') || (language === "hi" ? "रीफ्रेश" : "Refresh")}
         </Button>
       </div>
 
@@ -330,46 +406,48 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
           <Card key={product.id} className="shadow-card">
             <CardContent className="p-4">
               <div className="space-y-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground">{product.category}</p>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(product)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(product.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                                 <div className="flex justify-between items-start">
+                   <div>
+                     <h3 className="font-semibold">{product.product_name || 'Unknown Product'}</h3>
+                     <p className="text-sm text-muted-foreground">{product.unit || 'pieces'}</p>
+                   </div>
+                                     <div className="flex gap-1">
+                     <Button
+                       variant="ghost"
+                       size="sm"
+                       onClick={() => handleEdit(product)}
+                       title={language === "hi" ? "संपादित करें" : "Edit"}
+                     >
+                       <Edit className="h-4 w-4" />
+                     </Button>
+                     <Button
+                       variant="ghost"
+                       size="sm"
+                       onClick={() => handleDelete(product.id)}
+                       title={language === "hi" ? "हटाएं" : "Delete"}
+                       className="text-destructive hover:text-destructive"
+                     >
+                       <Trash2 className="h-4 w-4" />
+                     </Button>
+                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm">{language === "hi" ? "मात्रा:" : "Quantity:"}</span>
-                    <Badge variant={product.quantity <= product.lowStockThreshold ? "destructive" : "default"}>
-                      {product.quantity}
+                    <Badge variant={product.is_low_stock ? "destructive" : "default"}>
+                      {product.quantity} {product.unit}
                     </Badge>
                   </div>
-                  
+
                   <div className="flex justify-between">
-                    <span className="text-sm">{language === "hi" ? "मूल्य:" : "Price:"}</span>
-                    <span className="font-semibold">₹{product.price}</span>
+                    <span className="text-sm">{language === "hi" ? "प्रति यूनिट:" : "Per Unit:"}</span>
+                    <span className="font-semibold">₹{product.cost_per_unit.toLocaleString()}</span>
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <span className="text-sm">{language === "hi" ? "कुल मूल्य:" : "Total Value:"}</span>
-                    <span className="font-bold text-primary">₹{(product.quantity * product.price).toLocaleString()}</span>
+                    <span className="font-bold text-primary">₹{product.total_value.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -378,12 +456,40 @@ export function InventoryManagement({ language }: InventoryManagementProps) {
         ))}
       </div>
 
-      {filteredProducts.length === 0 && (
+      {loading && (
+        <Card className="shadow-card">
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              {language === "hi" ? "इन्वेंटरी लोड हो रही है..." : "Loading inventory..."}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {!loading && filteredProducts.length === 0 && products.length === 0 && (
+        <Card className="shadow-card">
+          <CardContent className="p-8 text-center">
+            <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground mb-2">
+              {language === "hi" ? "कोई इन्वेंटरी आइटम नहीं मिला" : "No inventory items found"}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {language === "hi" ?
+                "चैट में 'मैंने 5 फोन खरीदे Rs.50000 में' लिखकर आइटम जोड़ें" :
+                "Add items by typing 'I bought 5 phones for Rs.50000' in chat"
+              }
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {!loading && filteredProducts.length === 0 && products.length > 0 && (
         <Card className="shadow-card">
           <CardContent className="p-8 text-center">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              {language === "hi" ? "कोई उत्पाद नहीं मिला" : "No products found"}
+              {language === "hi" ? "खोज के लिए कोई उत्पाद नहीं मिला" : "No products match your search"}
             </p>
           </CardContent>
         </Card>

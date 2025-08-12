@@ -1,0 +1,187 @@
+[
+  {
+    "id": "annapurna_scheme",
+    "name": "Annapurna Scheme",
+    "name_hi": "अन्नपूर्णा योजना",
+    "description": "A government scheme providing loans to women for food catering business. The scheme offers loans up to ₹50,000 for purchasing kitchen equipment and utensils.",
+    "description_hi": "खाद्य कैटरिंग व्यवसाय के लिए महिलाओं को ऋण प्रदान करने वाली सरकारी योजना। यह योजना रसोई उपकरण और बर्तन खरीदने के लिए ₹50,000 तक का ऋण प्रदान करती है।",
+    "eligibility": "Women aged 18-60 years, minimum 8th class education, family income less than ₹2 lakhs per annum",
+    "eligibility_hi": "18-60 वर्ष की महिलाएं, न्यूनतम आठवीं कक्षा की शिक्षा, परिवार की आय ₹2 लाख प्रति वर्ष से कम",
+    "max_amount": "₹50,000",
+    "interest_rate": "2% per annum",
+    "tenure": "36 months",
+    "category": "food_business",
+    "application_process": "Apply through nearest bank branch with required documents including ID proof, address proof, income certificate, and business plan",
+    "application_process_hi": "आवश्यक दस्तावेजों के साथ निकटतम बैंक शाखा के माध्यम से आवेदन करें जिसमें आईडी प्रूफ, पता प्रूफ, आय प्रमाणपत्र और व्यवसाय योजना शामिल है",
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Address Proof",
+      "Income Certificate",
+      "Business Plan",
+      "Bank Statement"
+    ],
+    "benefits": [
+      "Low interest rate",
+      "No collateral required",
+      "Quick processing",
+      "Government support"
+    ],
+    "benefits_hi": [
+      "कम ब्याज दर",
+      "कोई गारंटी नहीं",
+      "त्वरित प्रसंस्करण",
+      "सरकारी समर्थन"
+    ],
+    "website": "https://www.nabard.org/annapurna-scheme",
+    "contact": "NABARD Head Office, Mumbai"
+  },
+  {
+    "id": "mudra_yojana",
+    "name": "Mudra Yojana",
+    "name_hi": "मुद्रा योजना",
+    "description": "Micro Units Development and Refinance Agency (MUDRA) provides loans to small businesses and entrepreneurs. Three categories: Shishu (up to ₹50,000), Kishore (₹50,000 to ₹5 lakhs), and Tarun (₹5 lakhs to ₹10 lakhs).",
+    "description_hi": "सूक्ष्म इकाई विकास और पुनर्वित्त एजेंसी (मुद्रा) छोटे व्यवसायों और उद्यमियों को ऋण प्रदान करती है। तीन श्रेणियां: शिशु (₹50,000 तक), किशोर (₹50,000 से ₹5 लाख), और तरुण (₹5 लाख से ₹10 लाख)।",
+    "eligibility": "Small business owners, micro enterprises, women entrepreneurs, existing businesses looking to expand",
+    "eligibility_hi": "छोटे व्यवसाय मालिक, सूक्ष्म उद्यम, महिला उद्यमी, विस्तार की इच्छा रखने वाले मौजूदा व्यवसाय",
+    "max_amount": "₹10,00,000",
+    "interest_rate": "8.5% - 12% per annum",
+    "tenure": "60 months",
+    "category": "micro_enterprise",
+    "application_process": "Apply through participating banks, NBFCs, or MFIs. Submit business plan, KYC documents, and financial statements.",
+    "application_process_hi": "सहभागी बैंकों, एनबीएफसी, या एमएफआई के माध्यम से आवेदन करें। व्यवसाय योजना, केवाईसी दस्तावेज और वित्तीय विवरण जमा करें।",
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Business Registration",
+      "Bank Statement",
+      "Business Plan",
+      "Income Proof"
+    ],
+    "benefits": [
+      "No collateral for loans up to ₹10 lakhs",
+      "Quick processing",
+      "Flexible repayment",
+      "Government guarantee"
+    ],
+    "benefits_hi": [
+      "₹10 लाख तक के ऋण के लिए कोई गारंटी नहीं",
+      "त्वरित प्रसंस्करण",
+      "लचीली चुकौती",
+      "सरकारी गारंटी"
+    ],
+    "website": "https://www.mudra.org.in",
+    "contact": "MUDRA Head Office, New Delhi"
+  },
+  {
+    "id": "udyogini_scheme",
+    "name": "Udyogini Scheme",
+    "name_hi": "उद्योगिनी योजना",
+    "description": "A scheme specifically designed for women entrepreneurs to start or expand their businesses. Provides financial assistance and training support.",
+    "description_hi": "महिला उद्यमियों के लिए विशेष रूप से डिज़ाइन की गई योजना जो अपना व्यवसाय शुरू करने या विस्तार करने के लिए है। वित्तीय सहायता और प्रशिक्षण समर्थन प्रदान करती है।",
+    "eligibility": "Women aged 18-55 years, family income less than ₹3 lakhs per annum, minimum 8th class education",
+    "eligibility_hi": "18-55 वर्ष की महिलाएं, परिवार की आय ₹3 लाख प्रति वर्ष से कम, न्यूनतम आठवीं कक्षा की शिक्षा",
+    "max_amount": "₹3,00,000",
+    "interest_rate": "4% per annum",
+    "tenure": "60 months",
+    "category": "women_entrepreneurs",
+    "application_process": "Apply through designated banks with required documents and business proposal",
+    "application_process_hi": "आवश्यक दस्तावेजों और व्यवसाय प्रस्ताव के साथ नामित बैंकों के माध्यम से आवेदन करें",
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Income Certificate",
+      "Business Plan",
+      "Bank Statement",
+      "Training Certificate"
+    ],
+    "benefits": [
+      "Subsidized interest rate",
+      "Training support",
+      "No collateral",
+      "Government backing"
+    ],
+    "benefits_hi": [
+      "सब्सिडी वाली ब्याज दर",
+      "प्रशिक्षण समर्थन",
+      "कोई गारंटी नहीं",
+      "सरकारी समर्थन"
+    ],
+    "website": "https://www.nabard.org/udyogini",
+    "contact": "NABARD Regional Offices"
+  },
+  {
+    "id": "stand_up_india",
+    "name": "Stand Up India Scheme",
+    "name_hi": "स्टैंड अप इंडिया योजना",
+    "description": "Facilitates bank loans between ₹10 lakh and ₹1 Crore to at least one SC/ST borrower and one woman borrower per bank branch for setting up a greenfield enterprise.",
+    "description_hi": "हर बैंक शाखा से कम से कम एक एससी/एसटी उधारकर्ता और एक महिला उधारकर्ता को हरित क्षेत्र उद्यम स्थापित करने के लिए ₹10 लाख और ₹1 करोड़ के बीच बैंक ऋण की सुविधा प्रदान करता है।",
+    "eligibility": "Women entrepreneurs, SC/ST entrepreneurs, greenfield enterprises",
+    "eligibility_hi": "महिला उद्यमी, एससी/एसटी उद्यमी, हरित क्षेत्र उद्यम",
+    "max_amount": "₹1,00,00,000",
+    "interest_rate": "MCLR + 3% + Tenor Premium",
+    "tenure": "84 months",
+    "category": "greenfield_enterprise",
+    "application_process": "Apply through any scheduled commercial bank branch with detailed project report and required documents",
+    "application_process_hi": "विस्तृत परियोजना रिपोर्ट और आवश्यक दस्तावेजों के साथ किसी भी अनुसूचित वाणिज्यिक बैंक शाखा के माध्यम से आवेदन करें",
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Caste Certificate (if applicable)",
+      "Project Report",
+      "Bank Statement",
+      "Business Plan"
+    ],
+    "benefits": [
+      "High loan amount",
+      "Greenfield enterprise support",
+      "Government guarantee",
+      "Quick processing"
+    ],
+    "benefits_hi": [
+      "उच्च ऋण राशि",
+      "हरित क्षेत्र उद्यम समर्थन",
+      "सरकारी गारंटी",
+      "त्वरित प्रसंस्करण"
+    ],
+    "website": "https://www.standupmitra.in",
+    "contact": "SIDBI, Lucknow"
+  },
+  {
+    "id": "stree_shakti",
+    "name": "Stree Shakti Yojana",
+    "name_hi": "स्त्री शक्ति योजना",
+    "description": "A scheme to empower women entrepreneurs by providing them with financial assistance and training to start or expand their businesses.",
+    "description_hi": "महिला उद्यमियों को सशक्त बनाने के लिए एक योजना जो उन्हें अपना व्यवसाय शुरू करने या विस्तार करने के लिए वित्तीय सहायता और प्रशिक्षण प्रदान करती है।",
+    "eligibility": "Women entrepreneurs, existing business owners, new business starters",
+    "eligibility_hi": "महिला उद्यमी, मौजूदा व्यवसाय मालिक, नए व्यवसाय शुरू करने वाले",
+    "max_amount": "₹5,00,000",
+    "interest_rate": "6% per annum",
+    "tenure": "60 months",
+    "category": "women_empowerment",
+    "application_process": "Apply through participating banks with business proposal and required documents",
+    "application_process_hi": "व्यवसाय प्रस्ताव और आवश्यक दस्तावेजों के साथ सहभागी बैंकों के माध्यम से आवेदन करें",
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Business Plan",
+      "Bank Statement",
+      "Income Proof",
+      "Training Certificate"
+    ],
+    "benefits": [
+      "Low interest rate",
+      "Training support",
+      "No collateral",
+      "Government backing"
+    ],
+    "benefits_hi": [
+      "कम ब्याज दर",
+      "प्रशिक्षण समर्थन",
+      "कोई गारंटी नहीं",
+      "सरकारी समर्थन"
+    ],
+    "website": "https://www.nabard.org/stree-shakti",
+    "contact": "NABARD Regional Offices"
+  }
+]

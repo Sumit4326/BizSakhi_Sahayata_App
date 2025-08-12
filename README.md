@@ -1,73 +1,52 @@
-# Welcome to your Lovable project
+﻿🌸 BizSakhi – AI Business Assistant
+Developed by Sharlet Alex and Nithin S
 
-## Project info
+Empowering Rural & Small-Scale Entrepreneurs in India
 
-**URL**: https://lovable.dev/projects/f67863d1-5818-400b-8ed3-3d216df8cbb5
+BizSakhi is an AI-powered business management app designed to help rural and small-scale entrepreneurs streamline their operations, bridge language barriers, and access financial opportunities.
+It combines multi-language support, AI automation, and personalized recommendations to make business tools more inclusive.
 
-## How can I edit this code?
+🚀 Features
+🎤 Multi-Language Voice Chat – Hindi, Tamil, Malayalam, and English
+💰 Voice-Based Income & Expense Tracking – Add financial records directly through chat (or manually)
+📦 Voice-Based Inventory Management – Add and update stock using natural conversations (or manually)
+📄 OCR Receipt Processing – Azure OCR for quick and accurate data entry
+🤖 AI Business Assistant – Smart suggestions for daily operations
+📜 RAG-Based Recommendations – Personalized loan and government/business scheme suggestions in your preferred language
+🔐 Secure Authentication – Supabase-powered user management
+🎯 Mission
+To empower rural entrepreneurs with modern digital tools, making business management easier, language-friendly, and accessible to communities with limited exposure to technology.
 
-There are several ways of editing your application.
+🛠 Tech Stack
+Frontend: React + TypeScript + Tailwind CSS + Supabase
+Backend: FastAPI + Python + Google AI + RAG
+OCR: Azure Cognitive Services
+Database & Auth: Supabase
 
-**Use Lovable**
+📦 Installation
+# Clone the repository
+git clone https://github.com/your-username/bizsakhi-sahayata-app.git
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f67863d1-5818-400b-8ed3-3d216df8cbb5) and start prompting.
+# Navigate to project folder
+cd bizsakhi-sahayata-app
 
-Changes made via Lovable will be committed automatically to this repo.
+# Install frontend dependencies
+npm install
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Install backend dependencies
+cd backend
+pip install -r requirements.txt
+▶️ Running the App
+# Start frontend
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+# Start backend (from backend folder)
+uvicorn main:app --reload
+Access at: http://localhost:8080
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+🤝 Contributing
+We welcome contributions!
+Fork the repo, make changes, and submit a pull request.
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/f67863d1-5818-400b-8ed3-3d216df8cbb5) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+📄 License
+This project is licensed under the MIT License.
