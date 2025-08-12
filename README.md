@@ -41,6 +41,7 @@ pip install -r requirements.txt
 
 
 ▶️ Running the App
+
 # Start frontend
 npm run dev
 
@@ -49,8 +50,10 @@ uvicorn main:app --reload
 Access at: http://localhost:8080
 
 🤝 Contributing
+
 We welcome contributions!
 Fork the repo, make changes, and submit a pull request.
 
 📄 License
+
 This project is licensed under the MIT License.
